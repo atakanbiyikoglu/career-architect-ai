@@ -1,0 +1,12 @@
+[
+  { "id": "big5_o1", "type": "Openness", "text": "Yeni deneyimlere ve maceralara atılmaktan keyif alırım." },
+  { "id": "big5_o2", "type": "Openness", "text": "Hayal gücüm geniştir ve sanatsal konular ilgimi çeker." },
+  { "id": "big5_c1", "type": "Conscientiousness", "text": "İşlerimi her zaman planlı ve düzenli bir şekilde yaparım." },
+  { "id": "big5_c2", "type": "Conscientiousness", "text": "Sorumluluklarımı zamanında yerine getirmek benim için önemlidir." },
+  { "id": "big5_e1", "type": "Extraversion", "text": "Yeni insanlarla tanışmak ve sosyal ortamlarda bulunmak beni canlandırır." },
+  { "id": "big5_e2", "type": "Extraversion", "text": "Genellikle konuşkan ve enerjik biriyimdir." },
+  { "id": "big5_a1", "type": "Agreeableness", "text": "İnsanlara karşı genellikle nazik ve güven doluyumdur." },
+  { "id": "big5_a2", "type": "Agreeableness", "text": "Başkalarıyla iş birliği yapmayı severim, çatışmadan kaçınırım." },
+  { "id": "big5_n1", "type": "Neuroticism", "text": "Stresli durumlarda kolayca endişelenir veya gerilirim." },
+  { "id": "big5_n2", "type": "Neuroticism", "text": "Duygusal durumum gün içinde sık sık değişebilir." }
+]

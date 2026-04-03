@@ -1,0 +1,20 @@
+[
+  { "id": "riasec_r1", "type": "Realistic", "text": "Bozuk elektronik aletleri tamir etmeyi severim." },
+  { "id": "riasec_r4", "type": "Realistic", "text": "Makinelerin nasıl çalıştığını incelemek ilgimi çeker." },
+  { "id": "riasec_r5", "type": "Realistic", "text": "Ellerimi kullanarak somut işler yapmayı tercih ederim." },
+  { "id": "riasec_i1", "type": "Investigative", "text": "Bilimsel teorileri ve neden-sonuç ilişkilerini araştırmayı severim." },
+  { "id": "riasec_i2", "type": "Investigative", "text": "Karmaşık problemleri çözmek için zihinsel çaba harcamaktan hoşlanırım." },
+  { "id": "riasec_i5", "type": "Investigative", "text": "Matematiksel veya mantıksal bulmacalar çözmekten keyif alırım." },
+  { "id": "riasec_a3", "type": "Artistic", "text": "Yaratıcı ve kuralları esnek olan ortamlarda çalışmayı tercih ederim." },
+  { "id": "riasec_a4", "type": "Artistic", "text": "Estetik ve tasarıma önem veririm." },
+  { "id": "riasec_a5", "type": "Artistic", "text": "Özgün ve yenilikçi fikirler üretmekten hoşlanırım." },
+  { "id": "riasec_s2", "type": "Social", "text": "Bir gruba liderlik etmekten çok, öğretmeyi ve geliştirmeyi severim." },
+  { "id": "riasec_s4", "type": "Social", "text": "İnsanlarla iletişim kurabileceğim meslekleri, makine veya verilerle çalışmaya tercih ederim." },
+  { "id": "riasec_s5", "type": "Social", "text": "Empati kurma yeteneğimin güçlü olduğunu düşünürüm." },
+  { "id": "riasec_e1", "type": "Enterprising", "text": "Bir projeyi yönetmek ve insanları organize etmekten keyif alırım." },
+  { "id": "riasec_e2", "type": "Enterprising", "text": "İnsanları ikna etmek ve fikirlerimi satmak konusunda iyiyimdir." },
+  { "id": "riasec_e4", "type": "Enterprising", "text": "Girişimcilik ve iş dünyasıyla ilgili konular ilgimi çeker." },
+  { "id": "riasec_c1", "type": "Conventional", "text": "Düzenli, planlı ve kuralları belli olan işleri severim." },
+  { "id": "riasec_c2", "type": "Conventional", "text": "Verileri kaydetmek, arşivlemek veya hesap yapmak bana uygun gelir." },
+  { "id": "riasec_c3", "type": "Conventional", "text": "Detaylara dikkat ederim ve hataları bulmakta iyiyimdir." }
+]
