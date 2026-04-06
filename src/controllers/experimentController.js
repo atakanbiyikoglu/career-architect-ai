@@ -273,3 +273,75 @@ exports.unlockAiReport = async (req, res) => {
         res.status(500).json({ error: 'AI raporu üretilemedi.', details: err.message });
     }
 };
+
+exports.getAdminMetrics = async (req, res) => {
+    try {
+        const adminToken = process.env.ADMIN_TOKEN;
+        if (adminToken) {
+            const provided = req.headers['x-admin-token'] || req.query.token;
+            if (provided !== adminToken) {
+                return res.status(401).json({ error: 'Yetkisiz erisim.' });
+            }
+        }
+
+        const { data: participants, error: pErr } = await supabase
+            .from('participants')
+            .select('id, experiment_group, department, current_goal');
+
+        if (pErr) throw pErr;
+
+        const { data: feedbackRows, error: fErr } = await supabase
+            .from('feedback')
+            .select('participant_id, satisfaction_score');
+
+        if (fErr) throw fErr;
+
+        const participantsById = new Map((participants || []).map((p) => [p.id, p]));
+
+        const scoreAgg = {
+            A: { total: 0, count: 0 },
+            B: { total: 0, count: 0 }
+        };
+
+        (feedbackRows || []).forEach((row) => {
+            const participant = participantsById.get(row.participant_id);
+            if (!participant) return;
+            const group = participant.experiment_group;
+            if (!scoreAgg[group]) return;
+            scoreAgg[group].total += Number(row.satisfaction_score || 0);
+            scoreAgg[group].count += 1;
+        });
+
+        const avgA = scoreAgg.A.count ? scoreAgg.A.total / scoreAgg.A.count : 0;
+        const avgB = scoreAgg.B.count ? scoreAgg.B.total / scoreAgg.B.count : 0;
+
+        const deptCounts = {};
+        const goalCounts = {};
+
+        (participants || []).forEach((p) => {
+            const dept = (p.department || 'Belirtilmemis').trim();
+            const goal = (p.current_goal || 'Belirtilmemis').trim();
+            deptCounts[dept] = (deptCounts[dept] || 0) + 1;
+            goalCounts[goal] = (goalCounts[goal] || 0) + 1;
+        });
+
+        return res.status(200).json({
+            status: 'success',
+            totals: {
+                participants: (participants || []).length,
+                feedbackCount: (feedbackRows || []).length
+            },
+            satisfactionByGroup: {
+                A: { average: Number(avgA.toFixed(2)), count: scoreAgg.A.count },
+                B: { average: Number(avgB.toFixed(2)), count: scoreAgg.B.count }
+            },
+            demographics: {
+                department: deptCounts,
+                goal: goalCounts
+            }
+        });
+    } catch (err) {
+        console.error('❌ Hata (getAdminMetrics):', err.message);
+        return res.status(500).json({ error: 'Admin metrikleri alinamadi.', details: err.message });
+    }
+};

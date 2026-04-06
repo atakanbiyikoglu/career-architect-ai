@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path'); // <-- Bunu ekle
 require('dotenv').config();
+const { apiLimiter } = require('./src/middleware/rateLimiters');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,11 +14,15 @@ app.use(express.json());
 // 'public' klasörünü statik olarak dışarı açıyoruz.
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api', require('./src/routes/api'));
+app.use('/api', apiLimiter, require('./src/routes/api'));
 
 // Ana sayfaya gidince index.html çalışsın
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
 app.listen(PORT, () => {
