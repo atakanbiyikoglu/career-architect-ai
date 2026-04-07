@@ -405,10 +405,6 @@ body {
 .pdf-btn:active {
 	transform: translateY(1px);
 }
-	display: grid;
-	grid-template-rows: auto 1fr auto;
-	min-height: 100vh;
-}
 
 .chat-header {
 	padding: 16px 28px;
