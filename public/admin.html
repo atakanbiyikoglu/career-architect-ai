@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kariyer Mimari AI - Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            padding: 24px;
+            color: #111827;
+        }
+
+        .wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+        }
+
+        p {
+            margin: 0 0 20px;
+            color: #4b5563;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .kpi {
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .muted {
+            color: #6b7280;
+        }
+
+        canvas {
+            width: 100%;
+            height: 320px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        input,
+        button {
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+        }
+
+        button {
+            background: #111827;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <h1>Admin & Analytics Dashboard</h1>
+        <p>Grup A/B memnuniyet karsilastirmasi ve demografik dagilimlar.</p>
+
+        <div class="toolbar">
+            <input id="admin-token" placeholder="ADMIN_TOKEN (opsiyonel)">
+            <button id="refresh-btn">Yenile</button>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="muted">Toplam Katilimci</div>
+                <div class="kpi" id="kpi-participants">-</div>
+            </div>
+            <div class="card">
+                <div class="muted">Toplam Feedback</div>
+                <div class="kpi" id="kpi-feedback">-</div>
+            </div>
+            <div class="card"><canvas id="groupChart"></canvas></div>
+            <div class="card"><canvas id="deptChart"></canvas></div>
+            <div class="card"><canvas id="goalChart"></canvas></div>
+        </div>
+    </div>
+
+    <script type="module" src="js/admin.js"></script>
+</body>
+
+</html>
