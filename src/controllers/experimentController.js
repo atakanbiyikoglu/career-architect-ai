@@ -345,3 +345,99 @@ exports.getAdminMetrics = async (req, res) => {
         return res.status(500).json({ error: 'Admin metrikleri alinamadi.', details: err.message });
     }
 };
+
+exports.exportCsv = async (req, res) => {
+    try {
+        const adminToken = process.env.ADMIN_TOKEN;
+        if (adminToken) {
+            const provided = req.headers['x-admin-token'] || req.query.token;
+            if (provided !== adminToken) {
+                return res.status(401).json({ error: 'Yetkisiz erisim.' });
+            }
+        }
+
+        // Fetch participants
+        const { data: participants, error: pErr } = await supabase
+            .from('participants')
+            .select('id, experiment_group, department, current_goal, created_at');
+
+        if (pErr) throw pErr;
+
+        // Fetch feedbacks and test_results in bulk
+        const { data: feedbackRows, error: fErr } = await supabase
+            .from('feedback')
+            .select('participant_id, satisfaction_score');
+        if (fErr) throw fErr;
+
+        const { data: testRows, error: tErr } = await supabase
+            .from('test_results')
+            .select('participant_id, test_type, raw_scores');
+        if (tErr) throw tErr;
+
+        const feedbackById = new Map();
+        (feedbackRows || []).forEach((r) => {
+            // If multiple feedback rows exist, prefer the latest inserted one is hard to detect here;
+            // we'll keep the first encountered as a reasonable value for export.
+            if (!feedbackById.has(r.participant_id)) feedbackById.set(r.participant_id, r.satisfaction_score);
+        });
+
+        const testByParticipant = new Map();
+        (testRows || []).forEach((row) => {
+            const arr = testByParticipant.get(row.participant_id) || [];
+            if (Array.isArray(row.raw_scores)) arr.push(...row.raw_scores);
+            testByParticipant.set(row.participant_id, arr);
+        });
+
+        // CSV helper
+        const escapeCsv = (val) => {
+            if (val === null || val === undefined) return '';
+            const s = typeof val === 'string' ? val : String(val);
+            if (s.includes('"') || s.includes(',') || s.includes('\n')) {
+                return '"' + s.replace(/"/g, '""') + '"';
+            }
+            return s;
+        };
+
+        const headers = ['id', 'tarih', 'bolum', 'hedef', 'deney_grubu', 'tatmin_puani', 'riasec_skorlari', 'ocean_skorlari'];
+
+        const rows = (participants || []).map((p) => {
+            const pid = p.id;
+            const created = p.created_at || '';
+            const dept = p.department || '';
+            const goal = p.current_goal || '';
+            const group = p.experiment_group || '';
+            const satisfaction = feedbackById.has(pid) ? feedbackById.get(pid) : '';
+
+            const answers = testByParticipant.get(pid) || [];
+            let riasec = {};
+            let ocean = {};
+            try {
+                const scores = require('../services/recommendationService').calculateScores(answers);
+                riasec = scores.riasec || {};
+                ocean = scores.ocean || {};
+            } catch (e) {
+                riasec = {};
+                ocean = {};
+            }
+
+            return [pid, created, dept, goal, group, satisfaction, JSON.stringify(riasec), JSON.stringify(ocean)];
+        });
+
+        // Build CSV string
+        const csvLines = [];
+        csvLines.push(headers.join(','));
+        rows.forEach((r) => {
+            csvLines.push(r.map(escapeCsv).join(','));
+        });
+
+        const csvContent = csvLines.join('\n');
+
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', 'attachment; filename="kariyer_mimari_veri_seti.csv"');
+        return res.status(200).send('\uFEFF' + csvContent);
+
+    } catch (err) {
+        console.error('❌ Hata (exportCsv):', err);
+        return res.status(500).json({ error: 'CSV export hatasi.', details: err.message });
+    }
+};

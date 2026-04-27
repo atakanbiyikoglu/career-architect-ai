@@ -222,7 +222,7 @@ async function downloadStyledExportPdf(context) {
 
 function buildFollowupPrompt(context) {
     const scoreSummary = formatScoreSummary(context.scores);
-    return `Merhaba. Ben ${context.profile.student_name}, ${context.profile.department} okuyorum ve hedefim ${context.profile.current_goal}. TUBITAK destekli Kariyer Mimari AI platformunda bir test cozdum. Ilgi alani (RIASEC) skorlarim: ${scoreSummary.riasec}. Kisilik (OCEAN) skorlarim: ${scoreSummary.ocean}. Platform bana su analizi ve nis bilisim rollerini onerdi:\n\n${context.reportText}\n\nLutfen benim profesyonel kariyer kocum ol. Bu veriler isiginda bana detayli bir ogrenme yol haritasi cikar, hangi projeleri yapmam gerektigini soyle ve benimle mulakat pratigi yap.`;
+    return `Merhaba. Ben ${context.profile.student_name}, ${context.profile.department} okuyorum ve hedefim ${context.profile.current_goal}. TÜBİTAK destekli Kariyer Mimari AI platformunda bir test çözdüm. İlgi alanı (RIASEC) skorlarım: ${scoreSummary.riasec}. Kişilik (OCEAN) skorlarım: ${scoreSummary.ocean}. Platform bana şu analizi ve niş bilişim rollerini önerdi:\n\n${context.reportText}\n\nLütfen benim profesyonel kariyer koçum ol. Bu veriler ışığında bana detaylı bir öğrenme yol haritası çıkar, hangi projeleri yapmam gerektiğini söyle ve benimle mülakat pratiği yap.`;
 }
 
 function handlePromptCopy(e) {
@@ -235,7 +235,7 @@ function handlePromptCopy(e) {
     const text = promptElement.textContent;
     navigator.clipboard.writeText(text).then(() => {
         const oldText = btn.textContent;
-        btn.textContent = 'Kopyalandi';
+        btn.textContent = 'Kopyalandı';
         btn.classList.add('copied');
 
         setTimeout(() => {
@@ -243,8 +243,8 @@ function handlePromptCopy(e) {
             btn.classList.remove('copied');
         }, 2000);
     }).catch((err) => {
-        console.error('Kopyala islemi basarisiz:', err);
-        alert('Kopyalama basarisiz oldu. Lutfen manuel olarak kopyala.');
+        console.error('Kopyala işlemi başarısız:', err);
+        alert('Kopyalama başarısız oldu. Lütfen manuel olarak kopyala.');
     });
 }
 
@@ -284,7 +284,7 @@ export function offerExportAndPrompt(context) {
                     await pdfPromise;
                     addBotMessage('✅ Tamamlandı! ChatGPT veya Gemini\'ye kopyaladığın komutu yapıştırarak kariyer mentörlüğüne devam edebilirsin.');
                 } else {
-                    addBotMessage('Tamam, bu adimi atliyoruz.');
+                    addBotMessage('Tamam, bu adımı atlıyoruz.');
                 }
 
                 resolve(choice);

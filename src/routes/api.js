@@ -17,5 +17,7 @@ router.post('/unlock-ai-report', experimentController.unlockAiReport);
 
 // GET http://localhost:3000/api/admin/metrics
 router.get('/admin/metrics', experimentController.getAdminMetrics);
+// GET http://localhost:3000/api/admin/export-csv
+router.get('/admin/export-csv', experimentController.exportCsv);
 
 module.exports = router;

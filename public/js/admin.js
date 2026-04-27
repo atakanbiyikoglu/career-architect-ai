@@ -72,3 +72,28 @@ async function refreshDashboard() {
 
 document.getElementById('refresh-btn').addEventListener('click', refreshDashboard);
 refreshDashboard();
+
+// CSV download handler
+document.getElementById('download-csv').addEventListener('click', async () => {
+    try {
+        const token = document.getElementById('admin-token').value.trim();
+        const headers = token ? { 'x-admin-token': token } : {};
+        const resp = await fetch('/api/admin/export-csv', { headers });
+        if (!resp.ok) {
+            const err = await resp.json().catch(() => ({}));
+            throw new Error(err.error || 'CSV indirilemedi.');
+        }
+
+        const blob = await resp.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'kariyer_mimari_veri_seti.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    } catch (e) {
+        alert(e.message);
+    }
+});

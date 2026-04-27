@@ -13,7 +13,7 @@ export async function startExperiment(payload) {
 
     const data = await parseJson(response);
     if (!response.ok) {
-        throw new Error(data.error || 'Baslatma istegi basarisiz.');
+        throw new Error(data.error || 'Başlatma isteği başarısız.');
     }
 
     return data;
@@ -28,7 +28,7 @@ export async function submitTestResultsApi(payload) {
 
     const data = await parseJson(response);
     if (!response.ok) {
-        throw new Error(data.error || 'Test sonuclari kaydedilemedi.');
+        throw new Error(data.error || 'Test sonuçları kaydedilemedi.');
     }
 
     return data;
@@ -58,7 +58,7 @@ export async function unlockAiReport(payload) {
 
     const data = await parseJson(response);
     if (!response.ok) {
-        throw new Error(data.error || 'AI raporu olusturulamadi.');
+        throw new Error(data.error || 'AI raporu oluşturulamadı.');
     }
 
     return data;

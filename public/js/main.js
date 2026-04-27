@@ -53,11 +53,11 @@ document.addEventListener('DOMContentLoaded', () => {
     showTyping();
     setTimeout(() => {
         hideTyping();
-        addBotMessage('Merhaba! Ben Kariyer Mimari AI. TUBITAK 2209-A kapsaminda gelistirilen bu platform, Ilgi ve Kisilik testlerini yapay zeka ile sentezleyerek sana en uygun Bilisim kariyerini cizer. (Teste baslayarak akademik aydinlatma metnini onaylamis sayilirsin).');
+        addBotMessage('Merhaba! Ben Kariyer Mimari AI. TÜBİTAK 2209-A kapsamında geliştirilen bu platform, İlgi ve Kişilik testlerini yapay zeka ile sentezleyerek sana en uygun Bilişim kariyerini çizer. (Teste başlayarak akademik aydınlatma metnini onaylamış sayılırsın).');
 
         setTimeout(() => {
-            addBotMessage('Baslamadan once seni taniyalim, adin nedir?');
-            setInputState(true, 'Mesajini yaz...');
+            addBotMessage('Başlamadan önce seni tanıyalım, adın nedir?');
+                setInputState(true, 'Mesajını yaz...');
         }, 500);
     }, TYPING_DELAY);
 });
@@ -159,7 +159,7 @@ async function previewHistoricAnalysisForExport(analysis) {
     clearChatPreserveTyping();
 
     addBotMessage('İşte geçmiş kariyer analizin. İnceleyebilir veya yapay zeka mentorlüğü için dışa aktarabilirsin:');
-    addBotMessage(analysis.report || '<p>Rapor bulunamadi.</p>', true);
+    addBotMessage(analysis.report || '<p>Rapor bulunamadı.</p>', true);
 
     appState.latestExportContext = normalizeHistoricExportContext(analysis);
 
@@ -237,12 +237,12 @@ function formatReport(reportText) {
 
 function addLinkedInShareOption(reportText) {
     const summary = String(reportText || '').slice(0, 500);
-    const shareText = `Kariyer Mimari AI ile psikometrik analizimi tamamladim. Ozet: ${summary}`;
+    const shareText = `Kariyer Mimari AI ile psikometrik analizimi tamamladım. Özet: ${summary}`;
     const hashtags = '#kariyer #yapayzeka #riasec #ocean #tubitak2209a';
     const linkedInUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(`${shareText}\n${hashtags}`)}`;
 
     addBotMessage(
-        `Sonucunu LinkedInde paylasmak istersen: <a href="${linkedInUrl}" target="_blank" rel="noopener noreferrer">LinkedIn'de Paylas</a>`,
+        `Sonucunu LinkedInde paylaşmak istersen: <a href="${linkedInUrl}" target="_blank" rel="noopener noreferrer">LinkedIn'de Paylaş</a>`,
         true
     );
 }
@@ -251,7 +251,7 @@ function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/service-worker.js').catch((err) => {
-                console.error('Service worker kaydi basarisiz:', err);
+                console.error('Service worker kaydı başarısız:', err);
             });
         });
     }
@@ -287,9 +287,9 @@ function askSatisfactionSurvey() {
 async function submitFeedback(score) {
     const participantId = localStorage.getItem('participant_id');
     if (!participantId) {
-        addBotMessage('Geri bildirim kaydedilemedi: katilimci kimligi bulunamadi.');
+        addBotMessage('Geri bildirim kaydedilemedi: katılımcı kimliği bulunamadı.');
         appState.flowState = 'FINISHED';
-        setInputState(false, 'Deney tamamlandi.');
+        setInputState(false, 'Deney tamamlandı.');
         return;
     }
 
@@ -301,7 +301,7 @@ async function submitFeedback(score) {
         const experimentGroup = localStorage.getItem('experiment_group');
 
         if (experimentGroup === 'A') {
-            addBotMessage('Geri bildirimin icin tesekkurler! Simdi verilerini Gercek Yapay Zeka (Gemini) modelimize gonderiyorum.');
+            addBotMessage('Geri bildirimin için teşekkürler! Şimdi verilerini Gerçek Yapay Zeka (Gemini) modelimize gönderiyorum.');
             showTyping();
             addBotMessage('Yapay Zeka analiz ediyor...');
 
@@ -318,30 +318,30 @@ async function submitFeedback(score) {
                     saveAnalysisToHistory(userData.student_name, aiReportHtml, appState.latestExportContext);
                     await offerExportAndPrompt(appState.latestExportContext);
                 } else {
-                    addBotMessage('AI raporu su an gosterilemiyor.');
+                    addBotMessage('AI raporu şu an gösterilemiyor.');
                 }
 
-                addBotMessage('Deney tamamlandi. Katkin icin tesekkurler!');
+                addBotMessage('Deney tamamlandı. Katkın için teşekkürler!');
                 appState.flowState = 'FINISHED';
-                setInputState(false, 'Deney tamamlandi. Tesekkurler!');
+                setInputState(false, 'Deney tamamlandı. Teşekkürler!');
                 return;
             } catch (unlockError) {
                 hideTyping();
                 console.error(unlockError);
-                addBotMessage('Surpriz AI raporu olusturulurken bir sorun oldu. Yine de deney basariyla tamamlandi.');
+                addBotMessage('Sürpriz AI raporu oluşturulurken bir sorun oldu. Yine de deney başarıyla tamamlandı.');
                 appState.flowState = 'FINISHED';
-                setInputState(false, 'Deney tamamlandi. Tesekkurler!');
+                setInputState(false, 'Deney tamamlandı. Teşekkürler!');
                 return;
             }
         }
 
-        addBotMessage('Geri bildirimin icin tesekkurler! Deney tamamlandi.');
+        addBotMessage('Geri bildirimin için teşekkürler! Deney tamamlandı.');
         appState.flowState = 'FINISHED';
-        setInputState(false, 'Deney tamamlandi. Tesekkurler!');
+        setInputState(false, 'Deney tamamlandı. Teşekkürler!');
     } catch (error) {
         hideTyping();
         console.error(error);
-        addBotMessage('Geri bildirimi kaydederken bir sorun olustu. Lutfen tekrar dene.');
+        addBotMessage('Geri bildirimi kaydederken bir sorun oldu. Lütfen tekrar dene.');
         appState.flowState = 'FEEDBACK';
 
         const ratingOptions = [1, 2, 3, 4, 5].map((value) => ({ label: `⭐ ${value}`, value }));
@@ -388,7 +388,7 @@ async function sendMessage() {
         hideTyping();
         await processOnboardingStep(text);
         if (appState.flowState === 'ONBOARDING') {
-            setInputState(true, 'Mesajini yaz...');
+                setInputState(true, 'Mesajını yaz...');
         }
     }, TYPING_DELAY);
 }
@@ -402,17 +402,17 @@ async function processOnboardingStep(input) {
             break;
         case 1:
             userData.school = input;
-            addBotMessage('Anladim. Peki hangi bolumde okuyorsun?');
+            addBotMessage('Anladım. Peki hangi bölümde okuyorsun?');
             appState.currentStep += 1;
             break;
         case 2:
             userData.department = input;
-            addBotMessage('Super. Son olarak, kariyer hedefin veya en buyuk hayalin nedir?');
+            addBotMessage('Süper. Son olarak, kariyer hedefin veya en büyük hayalin nedir?');
             appState.currentStep += 1;
             break;
         case 3:
             userData.current_goal = input;
-            addBotMessage('Harika! Bilgilerini kaydediyorum, lutfen bekle...');
+            addBotMessage('Harika! Bilgilerini kaydediyorum, lütfen bekle...');
 
             showTyping();
             try {
@@ -422,13 +422,13 @@ async function processOnboardingStep(input) {
                 localStorage.setItem('participant_id', data.participantId);
                 localStorage.setItem('experiment_group', data.group);
 
-                addBotMessage('Kaydini basariyla aldim. Simdi teste geciyoruz.');
+                addBotMessage('Kaydını başarıyla aldım. Şimdi teste geçiyoruz.');
                 setTimeout(startTestFlow, 900);
             } catch (error) {
                 hideTyping();
                 console.error(error);
-                addBotMessage('Baglanti hatasi olustu. Lutfen internetini kontrol et ve tekrar dene.');
-                setInputState(true, 'Mesajini yaz...');
+                addBotMessage('Bağlantı hatası oldu. Lütfen internetini kontrol et ve tekrar dene.');
+                setInputState(true, 'Mesajını yaz...');
             }
             break;
         default:
@@ -438,12 +438,12 @@ async function processOnboardingStep(input) {
 
 async function startTestFlow() {
     appState.flowState = 'TEST_INTRO';
-    setInputState(false, 'Test sirasinda butonlarla ilerleyin...');
+    setInputState(false, 'Test sırasında butonlarla ilerleyin...');
 
     showTyping();
     setTimeout(async () => {
         hideTyping();
-        addBotMessage('Kisa bir ilgi ve kisilik testi baslatiyorum. Hazirsan sorular geliyor.');
+        addBotMessage('Kısa bir ilgi ve kişilik testi başlatıyorum. Hazırsan sorular geliyor.');
 
         try {
             const [riasecRes, oceanRes] = await Promise.all([
@@ -467,7 +467,7 @@ async function startTestFlow() {
             setTimeout(askNextQuestion, 820);
         } catch (error) {
             console.error(error);
-            addBotMessage('Test sorulari yuklenemedi. Sayfayi yenileyip tekrar dener misin?');
+            addBotMessage('Test soruları yüklenemedi. Sayfayı yenileyip tekrar dener misin?');
         }
     }, 900);
 }
@@ -488,8 +488,8 @@ function askNextQuestion() {
         addBotMessage(`Soru ${stepNo}/${total}: ${q.text}`);
         addOptions(
             [
-                { label: 'Evet, katiliyorum', value: true },
-                { label: 'Hayir, katilmiyorum', value: false }
+                { label: 'Evet, katılıyorum', value: true },
+                { label: 'Hayır, katılmıyorum', value: false }
             ],
             handleOptionClick
         );
@@ -499,14 +499,14 @@ function askNextQuestion() {
     if (appState.currentTest === 'RIASEC') {
         appState.currentTest = 'OCEAN';
         appState.currentQuestionIndex = 0;
-        addBotMessage('Harika. Simdi kisilik envanteri bolumune geciyoruz.');
+        addBotMessage('Harika. Şimdi kişilik envanteri bölümüne geçiyoruz.');
         showTyping();
         setTimeout(askNextQuestion, 900);
         return;
     }
 
     appState.flowState = 'FINISHED';
-    addBotMessage('Tum testi tamamladin. Cevaplarini analiz ediyorum...');
+    addBotMessage('Tüm testi tamamladın. Cevaplarını analiz ediyorum...');
     submitTestResults();
 }
 
@@ -516,7 +516,7 @@ async function submitTestResults() {
 
     if (!participantId) {
         hideTyping();
-        addBotMessage('Bir sorun olustu: katilimci kimligi bulunamadi.');
+        addBotMessage('Bir sorun oldu: katılımcı kimliği bulunamadı.');
         return;
     }
 
@@ -524,11 +524,11 @@ async function submitTestResults() {
         const data = await submitTestResultsApi({ participantId, testAnswers });
         hideTyping();
 
-        addBotMessage('Harika! Sonuclarin hazir.');
+        addBotMessage('Harika! Sonuçların hazır.');
 
         const experimentGroup = localStorage.getItem('experiment_group');
 
-        if (data.report) {
+        if (data && data.report) {
             const reportHtml = formatReport(data.report);
             addBotMessage(reportHtml, true);
             addLinkedInShareOption(data.report);
@@ -540,13 +540,13 @@ async function submitTestResults() {
                 await offerExportAndPrompt(appState.latestExportContext);
             }
         } else {
-            addBotMessage('Rapor su an goruntulenemiyor, ancak anketi tamamlayabilirsin.');
+            addBotMessage('Rapor şu an görüntülenemiyor, ancak anketi tamamlayabilirsin.');
         }
 
         setTimeout(askSatisfactionSurvey, 600);
-    } catch (error) {
+    } catch (err) {
         hideTyping();
-        console.error(error);
-        addBotMessage('Baglanti hatasi olustu. Lutfen tekrar dene.');
+        console.error(err);
+        addBotMessage('Bağlantı hatası oldu. Lütfen tekrar dene.');
     }
 }
