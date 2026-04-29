@@ -4,62 +4,52 @@ async function parseJson(response) {
     return response.json().catch(() => ({}));
 }
 
-export async function startExperiment(payload) {
-    const response = await fetch(API_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
+async function requestJson(url, options, fallbackErrorMessage) {
+    let response;
+
+    try {
+        response = await fetch(url, options);
+    } catch (error) {
+        console.error('API request failed:', { url, message: error.message });
+        throw new Error('Sunucuya ulaşılamadı. Lütfen bağlantını kontrol edip tekrar dene.');
+    }
 
     const data = await parseJson(response);
     if (!response.ok) {
-        throw new Error(data.error || 'Başlatma isteği başarısız.');
+        throw new Error(data.error || fallbackErrorMessage);
     }
 
     return data;
+}
+
+export async function startExperiment(payload) {
+    return requestJson(API_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }, 'Başlatma isteği başarısız.');
 }
 
 export async function submitTestResultsApi(payload) {
-    const response = await fetch('/api/submit-test', {
+    return requestJson('/api/submit-test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-    });
-
-    const data = await parseJson(response);
-    if (!response.ok) {
-        throw new Error(data.error || 'Test sonuçları kaydedilemedi.');
-    }
-
-    return data;
+    }, 'Test sonuçları kaydedilemedi.');
 }
 
 export async function submitFeedbackApi(payload) {
-    const response = await fetch('/api/submit-feedback', {
+    return requestJson('/api/submit-feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-    });
-
-    const data = await parseJson(response);
-    if (!response.ok) {
-        throw new Error(data.error || 'Geri bildirim kaydedilemedi.');
-    }
-
-    return data;
+    }, 'Geri bildirim kaydedilemedi.');
 }
 
 export async function unlockAiReport(payload) {
-    const response = await fetch('/api/unlock-ai-report', {
+    return requestJson('/api/unlock-ai-report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-    });
-
-    const data = await parseJson(response);
-    if (!response.ok) {
-        throw new Error(data.error || 'AI raporu oluşturulamadı.');
-    }
-
-    return data;
+    }, 'AI raporu oluşturulamadı.');
 }

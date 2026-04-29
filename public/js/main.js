@@ -12,6 +12,7 @@ import {
     addBotMessage,
     addUserMessage,
     addOptions,
+    addActionOptions,
     hideLatestOptionGroup,
     showTyping,
     hideTyping,
@@ -53,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showTyping();
     setTimeout(() => {
         hideTyping();
-        addBotMessage('Merhaba! Ben Kariyer Mimari AI. TÜBİTAK 2209-A kapsamında geliştirilen bu platform, İlgi ve Kişilik testlerini yapay zeka ile sentezleyerek sana en uygun Bilişim kariyerini çizer. (Teste başlayarak akademik aydınlatma metnini onaylamış sayılırsın).');
+        addBotMessage('Merhaba! Ben Kariyer Mimari AI. TÜBİTAK 2209-A kapsamında geliştirilen bu platform, ilgi ve kişilik testlerini yapay zeka ile sentezleyerek sana en uygun bilişim kariyerini çizer. (Teste başlayarak akademik aydınlatma metnini onaylamış sayılırsın).');
 
         setTimeout(() => {
             addBotMessage('Başlamadan önce seni tanıyalım, adın nedir?');
@@ -264,16 +265,9 @@ function askSatisfactionSurvey() {
     setTimeout(() => {
         hideTyping();
 
-        const experimentGroup = localStorage.getItem('experiment_group');
-        let feedbackMessage;
-
-        if (experimentGroup === 'A') {
-            feedbackMessage = 'Analiz raporunu nasıl buldun? 🌟 (💡 İpucu: Puanlamanı yaptıktan sonra sana özel, gelişmiş bir **Yapay Zeka (AI) sürprizimiz** olacak! 🎁) Lütfen 1\'den 5\'e kadar bir puan yazarak gönder:';
-        } else {
-            feedbackMessage = 'Sana özel hazırladığım bu yapay zeka raporunu nasıl buldun? 🌟 (💡 İpucu: Puanlamanı yaptıktan sonra bu verilerle kendi ChatGPT\'nde çalışabilmen için sana **özel bir komut (prompt)** hediye edeceğim!) Lütfen 1\'den 5\'e kadar bir puan yazarak gönder:';
-        }
-
-        addBotMessage(feedbackMessage);
+        const surveyMessage = 'Deneyiminizi puanlayarak profesyonel analiz raporunuzu PDF formatında hemen indirebilirsiniz! 📊 Lütfen 1\'den 5\'e kadar bir puan veriniz:';
+        
+        addBotMessage(surveyMessage);
 
         const ratingOptions = [1, 2, 3, 4, 5].map((score) => ({
             label: `⭐ ${score}`,
@@ -298,50 +292,26 @@ async function submitFeedback(score) {
         await submitFeedbackApi({ participantId, satisfaction_score: score });
         hideTyping();
 
-        const experimentGroup = localStorage.getItem('experiment_group');
+        addBotMessage(`Teşekkürler! ${score}/5 puanını kaydettim. Şimdi PDF raporunu ve yapay zeka mentörlüğü için özel komutunu hazırlıyorum...`);
 
-        if (experimentGroup === 'A') {
-            addBotMessage('Geri bildirimin için teşekkürler! Şimdi verilerini Gerçek Yapay Zeka (Gemini) modelimize gönderiyorum.');
-            showTyping();
-            addBotMessage('Yapay Zeka analiz ediyor...');
-
-            try {
-                const unlockData = await unlockAiReport({ participantId });
-                hideTyping();
-
-                if (unlockData.report) {
-                    const aiReportHtml = formatReport(unlockData.report);
-                    addBotMessage(aiReportHtml, true);
-                    addLinkedInShareOption(unlockData.report);
-
-                    appState.latestExportContext = createExportContext(unlockData.report, aiReportHtml);
-                    saveAnalysisToHistory(userData.student_name, aiReportHtml, appState.latestExportContext);
-                    await offerExportAndPrompt(appState.latestExportContext);
-                } else {
-                    addBotMessage('AI raporu şu an gösterilemiyor.');
-                }
-
-                addBotMessage('Deney tamamlandı. Katkın için teşekkürler!');
-                appState.flowState = 'FINISHED';
-                setInputState(false, 'Deney tamamlandı. Teşekkürler!');
-                return;
-            } catch (unlockError) {
-                hideTyping();
-                console.error(unlockError);
-                addBotMessage('Sürpriz AI raporu oluşturulurken bir sorun oldu. Yine de deney başarıyla tamamlandı.');
-                appState.flowState = 'FINISHED';
-                setInputState(false, 'Deney tamamlandı. Teşekkürler!');
-                return;
-            }
+        // Check if we have export context
+        if (appState.latestExportContext && hasValidScores(appState.latestExportContext)) {
+            setTimeout(() => {
+                offerExportAndPrompt(appState.latestExportContext).then(() => {
+                    addBotMessage('🎉 Deney tamamlandı. Katılımın için çok teşekkür ederiz!');
+                    appState.flowState = 'FINISHED';
+                    setInputState(false, 'Deney tamamlandı. Teşekkürler!');
+                });
+            }, 800);
+        } else {
+            addBotMessage('PDF ve komut hazırlanırken bir sorun oluştu, ancak deney tamamlandı.');
+            appState.flowState = 'FINISHED';
+            setInputState(false, 'Deney tamamlandı. Teşekkürler!');
         }
-
-        addBotMessage('Geri bildirimin için teşekkürler! Deney tamamlandı.');
-        appState.flowState = 'FINISHED';
-        setInputState(false, 'Deney tamamlandı. Teşekkürler!');
     } catch (error) {
         hideTyping();
         console.error(error);
-        addBotMessage('Geri bildirimi kaydederken bir sorun oldu. Lütfen tekrar dene.');
+        addBotMessage('Puanı kaydederken bir sorun oldu. Lütfen sayfayı yenile ve tekrar dene.');
         appState.flowState = 'FEEDBACK';
 
         const ratingOptions = [1, 2, 3, 4, 5].map((value) => ({ label: `⭐ ${value}`, value }));
@@ -367,6 +337,11 @@ async function handleOptionClick(value, label) {
         appState.currentQuestionIndex += 1;
         showTyping();
         setTimeout(askNextQuestion, 560);
+        return;
+    }
+
+    if (appState.flowState === 'AI_OPTIONAL') {
+        // This will be handled by askGroupAAboutAI's callback
         return;
     }
 
@@ -536,17 +511,69 @@ async function submitTestResults() {
             appState.latestExportContext = createExportContext(data.report, reportHtml);
             saveAnalysisToHistory(userData.student_name, reportHtml, appState.latestExportContext);
 
-            if (experimentGroup === 'B') {
-                await offerExportAndPrompt(appState.latestExportContext);
+            // For Group A: Ask if they want to see AI analysis
+            if (experimentGroup === 'A' && data.isGroupA) {
+                setTimeout(() => askGroupAAboutAI(), 800);
+                return;
             }
+
+            // For Group B: Skip to satisfaction survey (export will come after rating)
+            setTimeout(askSatisfactionSurvey, 800);
         } else {
             addBotMessage('Rapor şu an görüntülenemiyor, ancak anketi tamamlayabilirsin.');
+            setTimeout(askSatisfactionSurvey, 800);
         }
-
-        setTimeout(askSatisfactionSurvey, 600);
     } catch (err) {
         hideTyping();
         console.error(err);
         addBotMessage('Bağlantı hatası oldu. Lütfen tekrar dene.');
+    }
+}
+
+async function askGroupAAboutAI() {
+    appState.flowState = 'AI_OPTIONAL';
+    addBotMessage('Şu an YZ kullanılmayan gruptasınız. Kariyer Mimarı AI\'ın sizin verilerinizi sentezleyerek hazırladığı özel analizi de görmek ister misiniz?');
+
+    addActionOptions(
+        [
+            { label: 'Evet, YZ Analizini Gör ✨', value: 'yes' },
+            { label: 'Hayır, Testi Bitir', value: 'no' }
+        ],
+        async (choice) => {
+            if (choice === 'yes') {
+                appState.flowState = 'FEEDBACK';
+                await unlockAIAnalysisForGroupA();
+            } else {
+                addBotMessage('Anlıyoruz, temel analiziniz tamamlandı.');
+                appState.flowState = 'FEEDBACK';
+                setTimeout(askSatisfactionSurvey, 600);
+            }
+        }
+    );
+}
+
+async function unlockAIAnalysisForGroupA() {
+    const participantId = localStorage.getItem('participant_id');
+    showTyping();
+
+    try {
+        const data = await unlockAiReport({ participantId });
+        hideTyping();
+
+        if (data && data.report) {
+            addBotMessage('İşte Yapay Zeka tarafından üretilen özel analiz:');
+            const reportHtml = formatReport(data.report);
+            addBotMessage(reportHtml, true);
+            addLinkedInShareOption(data.report);
+        } else {
+            addBotMessage('YZ analizi şu an oluşturulamadı.');
+        }
+
+        setTimeout(askSatisfactionSurvey, 800);
+    } catch (err) {
+        hideTyping();
+        console.error(err);
+        addBotMessage('Yapay zeka analizini yüklerken bir hata oluştu. Lütfen tekrar dene.');
+        setTimeout(askSatisfactionSurvey, 800);
     }
 }

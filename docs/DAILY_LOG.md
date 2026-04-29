@@ -12,6 +12,27 @@ DETAY SEVİYESİ: Yapılan işlemler ve sistemdeki etkileri teknik detaylarıyla
 
 # Daily Log
 
+## 2026-04-29
+
+### Özellikler (Features)
+
+- A/B grup akışı yeniden mimarlandı: Grup A kullanıcılarına kural tabanlı analiz gösterilip, ardından seçme hakkı sunularak "Yapay Zeka analizini görmek ister misiniz?" seçeneği eklendi.
+- Grup A için isteğe bağlı YZ analizi mekanizması uygulandı; `unlockAiReport` endpoint'i kullanıcı seçimi doğrultusunda AI raporunu dinamik olarak üretip sunmaya başladı.
+- Grup B akışı basitleştirildi; bu grup doğrudan AI analizi alıyor ve puanlama aşamasına geçiyor.
+- Ödül mekanizması tamamlandı: Puanlama (satisfaction survey) akışı deneyimin sonuna taşındı, metin "Deneyiminizi puanlayarak profesyonel analiz raporunuzu PDF formatında hemen indirebilirsiniz!" olarak yenilendi.
+- PDF indirme akışı puanlama şartına bağlandı; kullanıcı puan vermeden PDF butonu aktif hale gelinmiyor, puan verme anında export seçeneğine geçiliyor.
+- Frontend API sarmalayıcısı (`public/js/api.js`) ağ hatalarına karşı dayanıklı kılındı; fetch seviyesinde kopma durumlarda "Sunucuya ulaşılamadı" mesajı döndürülerek daha net hata iletişimi sağlandı.
+
+### Mimari ve Altyapı (Chores)
+
+- Groq SDK (`groq-sdk`) npm bağımlılıklarına eklendi; AI hizmeti Groq Llama 3.1 70B modelini birincil sağlayıcı olarak yapılandırıldı.
+- Hybrid AI service mimarisi kurgulandı: `src/services/aiService.js` içinde Groq API çağrısı önce deneniyor, hata/kota durumunda Gemini 2.0 Flash'a fallback yapılıyor, her iki başarısız olursa mock yanıt döndürülüyor.
+- aiService error logging zenginleştirildi; her AI sağlayıcı hatasından (`message`, `code`, `name`, `status`) eksiksiz bilgi konsola yazılıyor, böylece erişim sorunları canlı ortamda izlenebiliyor.
+- `.env` dosyasına `GROQ_API_KEY` parametresi eklendi; server.js startup logları sırasında iki API anahtarının da durumu bildirildi.
+- HTML'de PDF dışa aktarma kütüphanesi yerelleştirildi; `https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js` CDN bağımlılığı kaldırılarak `node_modules` üzerinden `public/vendor/html2pdf.bundle.min.js` yüklenmeye başlandı, böylece tarayıcı "Tracking Prevention" uyarısı ortadan kaldırıldı.
+- `package.json` bağımlılıklarına `html2pdf.js ^0.14.0` resmi paketi eklenerek npm aracılığıyla kütüphane versiyonu kontrolü sağlandı.
+- Doğrulama tamamlandı: Sözdizim hataları kontrol edildi (`npm run build` başarılı), aiService ve main.js dosyaları temiz olarak doğrulandı.
+
 ## 2026-04-27
 
 ### Özellikler (Features)

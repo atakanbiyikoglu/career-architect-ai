@@ -68,7 +68,7 @@ exports.submitTest = async (req, res) => {
         }
 
         const group = participant.experiment_group;
-        const sourceModel = group === 'A' ? 'rule_based' : 'gemini-2.0-flash';
+        const sourceModel = group === 'A' ? 'rule_based' : 'groq-llama-3.1-70b';
         console.log(`🔎 Participant ${participantId} is in Group ${group}`);
 
         // --- Recommendation Generation ---
@@ -78,13 +78,15 @@ exports.submitTest = async (req, res) => {
         const staticReport = recommendationService.generateRuleBasedReport(allScores);
 
         let finalReport = "";
+        let isGroupA = false;
 
         if (group === 'A') {
-            // Group A: Rule-Based Only
-            console.log(`🤖 Group A: Returning Rule-Based Report`);
+            // Group A: Rule-Based First, AI is optional (offered later via unlockAiReport)
+            console.log(`🤖 Group A: Returning Rule-Based Report (AI will be optional)`);
             finalReport = staticReport;
+            isGroupA = true;
         } else {
-            // Group B: AI-Based
+            // Group B: AI-Based Directly
             console.log(`🤖 Group B: Generating AI Report...`);
             const aiReport = await aiService.generateCareerAdvice(
                 {
@@ -154,7 +156,8 @@ exports.submitTest = async (req, res) => {
         res.status(200).json({
             message: 'Test sonuçları alındı.',
             status: 'success',
-            report: finalReport
+            report: finalReport,
+            isGroupA: isGroupA
         });
 
     } catch (err) {

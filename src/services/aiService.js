@@ -1,10 +1,16 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+const Groq = require("groq-sdk");
 
-exports.generateCareerAdvice = async (participantProfile, riasecScores, oceanScores) => {
-    try {
-        const prompt = `
+// Initialize Groq client
+const groqClient = new Groq({
+    apiKey: process.env.GROQ_API_KEY
+});
+
+// Initialize Gemini client
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+const buildCareerPrompt = (participantProfile, riasecScores, oceanScores) => `
 Sen Silikon Vadisi standardında bir Teknoloji Kariyer Mimarisin.
 Karşındaki: ${participantProfile.department} öğrencisi. Hedefi: ${participantProfile.current_goal}
 
@@ -30,12 +36,8 @@ Genel terimler (Yazılımcı ol) YASAK. Spesifik ol (Örn: "GoLang Backend Dev",
 ### 💡 Tavsiye
 (Hemen başlaması için 1 somut adım)
 `;
-        const result = await model.generateContent(prompt);
-        return result.response.text();
-    } catch (error) {
-        console.error("AI Error:", error.message);
-        // MOCK FALLBACK RESPONSE FOR SIMULATION/OFFLINE DEV
-        return `
+
+const getFallbackResponse = () => `
 ### 🎯 Dijital Kimliğin (SİMÜLASYON)
 Yapay zeka servisine erişilemediği için bu örnek cevabı görüyorsun. Normalde buraya kişiselleştirilmiş analiz gelecek.
 Senin profilin, teknoloji dünyasında "Sistem Mimarı" olmaya çok uygun.
@@ -51,6 +53,59 @@ Senin profilin, teknoloji dünyasında "Sistem Mimarı" olmaya çok uygun.
 
 ### 💡 Tavsiye
 Hemen bir AWS sertifikası çalışmaya başla.
-        `;
+`;
+
+exports.generateCareerAdvice = async (participantProfile, riasecScores, oceanScores) => {
+    const prompt = buildCareerPrompt(participantProfile, riasecScores, oceanScores);
+    
+    // Try Groq first
+    try {
+        console.log("[AI Service] Groq API çağrısı başlatılıyor...");
+        const groqResponse = await groqClient.chat.completions.create({
+            model: "llama-3.3-70b-versatile",
+            messages: [
+                {
+                    role: "user",
+                    content: prompt
+                }
+            ],
+            temperature: 0.7,
+            max_tokens: 1024
+        });
+        
+        const content = groqResponse.choices[0]?.message?.content;
+        if (content) {
+            console.log("[AI Service] ✅ Groq başarılı yanıt döndü");
+            return content;
+        }
+    } catch (groqError) {
+        console.error("[AI Service] Groq hatasını yakaladı:", {
+            message: groqError?.message,
+            code: groqError?.code,
+            name: groqError?.name,
+            status: groqError?.status
+        });
     }
+    
+    // Fallback to Gemini
+    try {
+        console.log("[AI Service] Gemini'ye fallback yapılıyor...");
+        const geminiResponse = await geminiModel.generateContent(prompt);
+        const content = geminiResponse.response.text();
+        
+        if (content) {
+            console.log("[AI Service] ✅ Gemini başarılı yanıt döndü");
+            return content;
+        }
+    } catch (geminiError) {
+        console.error("[AI Service] Gemini hatasını yakaladı:", {
+            message: geminiError?.message,
+            code: geminiError?.code,
+            name: geminiError?.name
+        });
+    }
+    
+    // Final fallback to mock response
+    console.error("[AI Service] Hem Groq hem Gemini başarısız. Fallback yanıt döndürülüyor.");
+    return getFallbackResponse();
 };
