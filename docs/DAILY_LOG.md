@@ -12,6 +12,17 @@ DETAY SEVİYESİ: Yapılan işlemler ve sistemdeki etkileri teknik detaylarıyla
 
 # Daily Log
 
+## 2026-05-14
+
+### Özellikler (Features)
+
+- Vercel ve Supabase için uyanıklık kontrolü amacıyla `GET /api/health` nabız rotası eklendi; rota `participants` tablosundan sınırlı bir okuma yaparak sistemin canlı olduğunu doğruluyor ve başarılı durumda zaman damgalı JSON yanıtı döndürüyor.
+
+### Mimari ve Altyapı (Chores)
+
+- Vercel dağıtım yapılandırması yeniden modern `rewrites` formatına taşındı; tüm isteklerin `server.js` dosyasına yönlendirilmesi sağlanarak eski `builds`/`routes` yapısı kaldırıldı.
+- Sağlık kontrolü akışı Supabase okuma sorgusuna bağlanarak ücretsiz katmandaki uyku modu etkilerini azaltmaya yönelik operasyonel bir izleme noktası oluşturuldu.
+
 ## 2026-04-29
 
 ### Özellikler (Features)

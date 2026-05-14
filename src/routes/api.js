@@ -1,7 +1,34 @@
 const express = require('express');
 const router = express.Router();
 const experimentController = require('../controllers/experimentController');
+const supabase = require('../config/supabase');
 const { analysisLimiter } = require('../middleware/rateLimiters');
+
+// GET http://localhost:3000/api/health
+router.get('/health', async (req, res) => {
+	try {
+		const { error } = await supabase
+			.from('participants')
+			.select('id')
+			.limit(1);
+
+		if (error) {
+			throw error;
+		}
+
+		res.status(200).json({
+			status: 'ok',
+			message: 'Vercel and Supabase are awake!',
+			timestamp: new Date().toISOString()
+		});
+	} catch (error) {
+		res.status(500).json({
+			status: 'error',
+			message: 'Health check failed.',
+			details: error?.message || 'Unknown error'
+		});
+	}
+});
 
 // POST http://localhost:3000/api/start-experiment
 router.post('/start-experiment', experimentController.startExperiment);
