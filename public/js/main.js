@@ -48,8 +48,50 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (chatForm) {
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            sendMessage();
+        });
+    }
+
     setupModalHandlers();
     registerServiceWorker();
+
+    const toggleBtn = document.getElementById('menu-toggle');
+    const appWrapper = document.querySelector('.app-wrapper') || document.body;
+    const sidebar = document.querySelector('.sidebar') || document.querySelector('.left-panel');
+
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isMobile = window.innerWidth <= 768;
+
+            if (isMobile) {
+                if (sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                } else {
+                    sidebar.classList.add('active');
+                }
+                return;
+            }
+
+            if (appWrapper.classList.contains('sidebar-collapsed')) {
+                appWrapper.classList.remove('sidebar-collapsed');
+            } else {
+                appWrapper.classList.add('sidebar-collapsed');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+    }
 
     showTyping();
     setTimeout(() => {

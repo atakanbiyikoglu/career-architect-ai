@@ -4,6 +4,20 @@ const experimentController = require('../controllers/experimentController');
 const supabase = require('../config/supabase');
 const { analysisLimiter } = require('../middleware/rateLimiters');
 
+const requireAdminPassword = (req, res, next) => {
+	const adminPassword = process.env.ADMIN_PASSWORD;
+	if (!adminPassword) {
+		return res.status(500).json({ error: 'ADMIN_PASSWORD tanımlı değil.' });
+	}
+
+	const providedPassword = req.headers['x-admin-password'];
+	if (providedPassword !== adminPassword) {
+		return res.status(401).json({ error: 'Yetkisiz erişim.' });
+	}
+
+	next();
+};
+
 // GET http://localhost:3000/api/health
 router.get('/health', async (req, res) => {
 	try {
@@ -29,6 +43,8 @@ router.get('/health', async (req, res) => {
 		});
 	}
 });
+
+router.use('/admin', requireAdminPassword);
 
 // POST http://localhost:3000/api/start-experiment
 router.post('/start-experiment', experimentController.startExperiment);

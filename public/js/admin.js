@@ -2,6 +2,40 @@ let groupChart;
 let deptChart;
 let goalChart;
 
+const ADMIN_PASSWORD_KEY = 'adminPassword';
+
+function getAdminPassword() {
+    let password = sessionStorage.getItem(ADMIN_PASSWORD_KEY);
+
+    if (!password) {
+        password = prompt('Lütfen Admin Şifresini Girin:')?.trim() || '';
+        if (password) {
+            sessionStorage.setItem(ADMIN_PASSWORD_KEY, password);
+        }
+    }
+
+    return password;
+}
+
+function clearAdminSession(message) {
+    sessionStorage.removeItem(ADMIN_PASSWORD_KEY);
+    if (message) {
+        alert(message);
+    }
+    location.reload();
+}
+
+function buildAdminHeaders() {
+    const password = getAdminPassword();
+    if (!password) {
+        throw new Error('Admin şifresi gerekli.');
+    }
+
+    return {
+        'x-admin-password': password
+    };
+}
+
 function toPieData(mapObj) {
     const labels = Object.keys(mapObj || {});
     const values = labels.map((k) => mapObj[k]);
@@ -46,13 +80,16 @@ function renderCharts(data) {
 }
 
 async function fetchMetrics() {
-    const token = document.getElementById('admin-token').value.trim();
-    const headers = token ? { 'x-admin-token': token } : {};
+    const headers = buildAdminHeaders();
 
     const response = await fetch('/api/admin/metrics', { headers });
     const data = await response.json();
 
     if (!response.ok) {
+        if (response.status === 401) {
+            clearAdminSession('Hatalı şifre');
+            return null;
+        }
         throw new Error(data.error || 'Metrikler alinamadi.');
     }
 
@@ -62,6 +99,9 @@ async function fetchMetrics() {
 async function refreshDashboard() {
     try {
         const data = await fetchMetrics();
+        if (!data) {
+            return;
+        }
         document.getElementById('kpi-participants').textContent = data.totals.participants;
         document.getElementById('kpi-feedback').textContent = data.totals.feedbackCount;
         renderCharts(data);
@@ -76,11 +116,14 @@ refreshDashboard();
 // CSV download handler
 document.getElementById('download-csv').addEventListener('click', async () => {
     try {
-        const token = document.getElementById('admin-token').value.trim();
-        const headers = token ? { 'x-admin-token': token } : {};
+        const headers = buildAdminHeaders();
         const resp = await fetch('/api/admin/export-csv', { headers });
         if (!resp.ok) {
             const err = await resp.json().catch(() => ({}));
+            if (resp.status === 401) {
+                clearAdminSession('Hatalı şifre');
+                return;
+            }
             throw new Error(err.error || 'CSV indirilemedi.');
         }
 
@@ -94,6 +137,10 @@ document.getElementById('download-csv').addEventListener('click', async () => {
         a.remove();
         window.URL.revokeObjectURL(url);
     } catch (e) {
+        if (e.message === 'Admin şifresi gerekli.') {
+            clearAdminSession('Admin şifresi gerekli.');
+            return;
+        }
         alert(e.message);
     }
 });

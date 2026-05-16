@@ -7,27 +7,26 @@
     <title>Kariyer Mimarı AI | TÜBİTAK 2209-A</title>
 
     <!-- SEO Meta Tags -->
+    <meta name="google-site-verification" content="0wCSlTXg91XE1q9E1oxRsKrL3015WsUmFs1ITpeFilk" />
     <meta name="description"
-        content="İki Faktörlü (İlgi-Kişilik) Psikometrik Modelin Üretken Yapay Zekâ ile Sentezlenmesi. Kırşehir Ahi Evran Üniversitesi TÜBİTAK 2209-A Projesi.">
-    <meta name="keywords"
-        content="Kariyer, Yapay Zeka, Psikometrik Test, RIASEC, OCEAN, TÜBİTAK, YBS, Atakan Bıyıkoğlu">
+        content="Kariyer Mimarı AI ile yeteneklerinizi analiz edin ve yapay zeka destekli kariyer yol haritanızı oluşturun." />
+    <meta name="keywords" content="kariyer testi, yapay zeka kariyer planlama, holland meslek testi, kariyer mimarı" />
     <meta name="author" content="Atakan Bıyıkoğlu">
 
     <!-- Open Graph Meta Tags -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://kariyer-mimari.vercel.app/">
-    <meta property="og:title" content="Kariyer Mimarı AI">
-    <meta property="og:description"
-        content="TÜBİTAK 2209-A: Psikometrik testini çöz, yapay zeka sana en uygun Bilişim kariyerini çizsin.">
-    <meta property="og:image" content="https://kariyer-mimari.vercel.app/assets/og-image.jpg">
+    <meta property="og:title" content="Kariyer Mimarı AI - Geleceğini Şekillendir" />
+    <meta property="og:description" content="Yapay zeka destekli kariyer analizinizi hemen yapın." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kariyermimari.tech/">
+    <meta property="og:image" content="https://kariyermimari.tech/assets/og-image.jpg">
 
     <!-- Twitter Card Meta Tags -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://kariyer-mimari.vercel.app/">
+    <meta property="twitter:url" content="https://kariyermimari.tech/">
     <meta property="twitter:title" content="Kariyer Mimarı AI">
     <meta property="twitter:description"
         content="TÜBİTAK 2209-A: Psikometrik testini çöz, yapay zeka sana en uygun Bilişim kariyerini çizsin.">
-    <meta property="twitter:image" content="https://kariyer-mimari.vercel.app/assets/og-image.jpg">
+    <meta property="twitter:image" content="https://kariyermimari.tech/assets/og-image.jpg">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="assets/logo.png">
@@ -37,7 +36,7 @@
     <!-- PDF Export Library -->
     <script src="vendor/html2pdf.bundle.min.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=1.0.1">
+    <link rel="stylesheet" href="style.css?v=1.0.2">
 </head>
 
 <body>
@@ -61,7 +60,17 @@
         </aside>
 
         <main class="chat-main">
-            <div class="chat-header">Kariyer Mimarı AI - Analiz Ekranı</div>
+            <div class="chat-header">
+                <button id="menu-toggle" class="hamburger-btn" aria-label="Menüyü Düzenle">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="chat-header-title">Kariyer Mimarı AI - Analiz Ekranı</div>
+            </div>
             <section id="chat-messages" class="chat-messages">
                 <div id="typing-indicator" class="typing-indicator hidden" aria-hidden="true">
                     <div class="typing-bubble">
@@ -73,7 +82,7 @@
             </section>
 
             <footer class="chat-input-shell">
-                <form id="chat-form" class="chat-form" onsubmit="event.preventDefault(); sendMessage();">
+                <form id="chat-form" class="chat-form">
                     <input type="text" id="user-input" placeholder="Mesajını yaz..." autocomplete="off">
                     <button type="submit" title="Mesaj gönder" aria-label="Mesaj gönder">Gönder</button>
                 </form>
@@ -173,7 +182,7 @@
         </div>
     </div>
 
-    <script type="module" src="js/main.js?v=1.0.1"></script>
+    <script type="module" src="js/main.js?v=1.0.2"></script>
 </body>
 
 </html>

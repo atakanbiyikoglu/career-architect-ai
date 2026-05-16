@@ -12,6 +12,30 @@ DETAY SEVİYESİ: Yapılan işlemler ve sistemdeki etkileri teknik detaylarıyla
 
 # Daily Log
 
+## 2026-05-16
+
+### Özellikler (Features)
+
+- Domain geçişi `kariyermimari.tech` olarak güncellendi; Open Graph ve Twitter Card URL’leri yeni alan adına taşındı.
+- `public/robots.txt` ve `public/sitemap.xml` yeniden üretildi; arama motoru keşfi için ana sayfa sitemap üzerinden açık şekilde sunuldu.
+- Google Site Verification meta etiketi eklendi ve arama motoru doğrulama altyapısı korunarak sayfa doğrulaması güçlendirildi.
+- Admin paneli için `x-admin-password` tabanlı oturum koruması devreye alındı; şifre istemi prompt üzerinden alınarak sessionStorage içinde tutulacak şekilde düzenlendi.
+- Masaüstü ve mobil uyumlu, dinamik daraltılabilir yan menü (collapsible sidebar) ve SVG toggle butonu entegre edildi.
+
+### Hata Düzeltmeleri (Fixes)
+
+- Mobil görünümdeki yatay taşma sorunları giderildi; ana platform, mesaj konteynerleri ve giriş formu esnek genişliğe alındı.
+- Mesaj balonları ve seçenek satırları dar ekranlarda ekran genişliğine uyum sağlayacak şekilde yeniden sınırlandı.
+- Yanlış admin şifresi durumunda 401 akışı için oturum temizleme ve uyarı davranışı eklendi.
+- Mobil görünümde ekranın altına gömülme ve üst barın taşması sorunu (100dvh viewport kilidi ile) çözüldü; drawer menünün durum (state) senkronizasyon hataları giderildi.
+
+### Mimari ve Altyapı (Chores)
+
+- `public/index.html` içindeki SEO ve sosyal paylaşım meta etiketleri yeni domain ile eşlendi; Google Site Verification meta etiketi korunarak doğrulama bütünlüğü sürdürüldü.
+- `public/style.css` içinde 768px altı için ayrı responsive medya sorgusu eklendi; horizontal scroll tamamen baskılandı ve içerik sarmalayıcıları `width: 100%` davranışına geçirildi.
+- Admin API rotaları için backend tarafında middleware bazlı güvenlik doğrulaması eklendi; `ADMIN_PASSWORD` ile `x-admin-password` karşılaştırması zorunlu hale getirildi.
+- HTML içerisindeki inline style/script kodları tamamen temizlenerek, Separation of Concerns (SoC) prensibine uygun temiz dosya mimarisine geçildi.
+
 ## 2026-05-14
 
 ### Özellikler (Features)
